@@ -3,7 +3,7 @@ package backend
 import (
 	"bytes"
 	"fmt"
-	"github.com/chengshiwen/influx-proxy/util"
+	"github.com/kali-brandwatch/influx-proxy/util"
 	"github.com/deckarep/golang-set"
 	"github.com/influxdata/influxdb1-client/models"
 	"io/ioutil"
@@ -117,6 +117,7 @@ func (circle *Circle) Query(w http.ResponseWriter, req *http.Request, tokens []s
 	}
 	pretty := req.FormValue("pretty") == "true"
 	body := util.MarshalJson(rsp, pretty, true)
+
 	if w.Header().Get("Content-Encoding") == "gzip" {
 		return util.GzipCompress(body)
 	} else {
@@ -160,6 +161,7 @@ func (circle *Circle) reduceBySeries(bodies [][]byte) (rsp *Response, err error)
 	seriesMap := make(map[string]*models.Row)
 	for _, b := range bodies {
 		_series, err := SeriesFromResponseBytes(b)
+
 		if err != nil {
 			return nil, err
 		}

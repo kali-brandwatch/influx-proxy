@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/chengshiwen/influx-proxy/backend"
-	"github.com/chengshiwen/influx-proxy/service"
+	"github.com/kali-brandwatch/influx-proxy/backend"
+	"github.com/kali-brandwatch/influx-proxy/service"
 	"log"
 	"net/http"
 	"runtime"

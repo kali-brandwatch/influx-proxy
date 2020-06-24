@@ -7,7 +7,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/chengshiwen/influx-proxy/util"
+	"github.com/kali-brandwatch/influx-proxy/util"
 	"io"
 	"io/ioutil"
 	"log"

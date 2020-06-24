@@ -48,7 +48,7 @@ Usage
 #### Quickstart
 
 ```sh
-$ go get -u github.com/chengshiwen/influx-proxy
+$ go get -u github.com/kali-brandwatch/influx-proxy
 $ $GOPATH/bin/influx-proxy -config /path/to/proxy.json
 ```
 
@@ -175,7 +175,7 @@ Only support match the following commands.
 HTTP Endpoints
 --------
 
-[HTTP Endpoints](https://github.com/chengshiwen/influx-proxy/wiki/HTTP-Endpoints)
+[HTTP Endpoints](https://github.com/kali-brandwatch/influx-proxy/wiki/HTTP-Endpoints)
 
 License
 -------

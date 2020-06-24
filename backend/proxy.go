@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/chengshiwen/influx-proxy/util"
+	"github.com/kali-brandwatch/influx-proxy/util"
 	"github.com/deckarep/golang-set"
 	"io/ioutil"
 	"log"
@@ -18,6 +18,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"github.com/RaveNoX/go-jsonmerge"
 )
 
 type Proxy struct {
@@ -264,13 +265,47 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 			}
 			time.Sleep(time.Microsecond)
 		}
-		meas, err := GetMeasurementFromTokens(tokens)
+		_, err := GetMeasurementFromTokens(tokens)
 		if err == nil {
-			// available circle -> key(db,meas) -> backend -> select or show
-			key := GetKey(db, meas)
-			backend := circle.GetBackend(key)
-			proxy.Logf("query circle: %d backend: %s", circle.CircleId, backend.Url)
-			return backend.Query(req, w, false)
+			// // original working mode: queries with measure will find the target backend by consistent hash
+			// // available circle -> key(db,meas) -> backend -> select or show
+			// key := GetKey(db, meas)
+			// backend := circle.GetBackend(key)
+			// proxy.Logf("query circle: %d backend: %s", circle.CircleId, backend.Url)
+			// return backend.Query(req, w, false)
+			// proxy.Logf("query response: %s", res)
+			// // res, err
+
+			// // modified working mode: queries will be sent to all backends in the available circle, and merged
+
+			bodies := make([]byte, 0)
+
+			for _, backend := range circle.Backends {
+				body, err := backend.Query(req, w, true)
+				if err != nil {
+					return nil, err
+				}
+				if body != nil {
+					if len(bodies) > 0 {
+						result, _, error := jsonmerge.MergeBytes(bodies, body)
+						if error == nil {
+							bodies = result
+						} else {
+							proxy.Logf("Error merging backend data: %s", error)
+							return nil, error
+						}
+					} else {
+						bodies = body
+					}
+				}
+			}
+
+			if w.Header().Get("Content-Encoding") == "gzip" {
+				return util.GzipCompress(bodies)
+			} else {
+				return bodies, nil
+			}
+
 		} else {
 			// available circle -> all backends -> show
 			proxy.Logf("query circle: %d", circle.CircleId)

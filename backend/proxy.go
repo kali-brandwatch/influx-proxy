@@ -19,6 +19,7 @@ import (
 	"sync/atomic"
 	"time"
 	"github.com/RaveNoX/go-jsonmerge"
+	"github.com/shomali11/parallelizer"
 )
 
 type Proxy struct {
@@ -278,24 +279,39 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 
 			// // modified working mode: queries will be sent to all backends in the available circle, and merged
 
-			bodies := make([]byte, 0)
+			// declare bodies as empty json, to allow jsonmerge work properly. this will be what we return
+			bodies := []byte(`{}`)
+			// calculate the number of the backends in the circle
+			ExpectedReplies := len(circle.Backends)
+			// declare QueryReplies array to store the replies of each individual backend query
+			QueryReplies := make([][]byte, 0)
+			// prepare worker pool for parallel querying each backend
+			group := parallelizer.NewGroup(parallelizer.WithPoolSize(ExpectedReplies))
+			defer group.Close()
+			// iterate each backend and parallelize query call
+			for i := 1; i <= ExpectedReplies; i++ {
+					j := i - 1 // to access zero-based array indices
+					group.Add(func() {
+						QueryReplies[j], _ := circle.Backends[j].Query(req, w, true)
+					})
+			}
 
-			for _, backend := range circle.Backends {
-				body, err := backend.Query(req, w, true)
-				if err != nil {
-					return nil, err
-				}
-				if body != nil {
-					if len(bodies) > 0 {
-						result, _, error := jsonmerge.MergeBytes(bodies, body)
-						if error == nil {
-							bodies = result
-						} else {
-							proxy.Logf("Error merging backend data: %s", error)
-							return nil, error
-						}
+			// wait for parallel queries to return
+			err := group.Wait()
+			if err != nil {
+				proxy.Logf("Error running parallel query: %v", error)
+				return nil, err
+			}
+
+			// iterate replies and merge
+			for _, reply := range QueryReplies {
+				if reply != nil {
+					result, _, error := jsonmerge.MergeBytes(bodies, reply)
+					if error == nil {
+						bodies = result
 					} else {
-						bodies = body
+						proxy.Logf("Error merging backend data: %s", error)
+						return nil, error
 					}
 				}
 			}

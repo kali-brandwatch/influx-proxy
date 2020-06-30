@@ -297,7 +297,7 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 						lock.Lock()
 						QueryReplies[j] = QueryReply
 						lock.Unlock()
-						proxy.Logf("QueryReplies got for index %d error: %v and response: %s", j, error, QueryReply)
+						proxy.Logf("QueryReplies got for index %d error: %v and response: %s", j, err, QueryReply)
 					})
 			}
 

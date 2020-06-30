@@ -292,14 +292,14 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 			for i := 1; i <= ExpectedReplies; i++ {
 					j := i - 1 // to access zero-based array indices
 					group.Add(func() {
-						QueryReplies[j], _ := circle.Backends[j].Query(req, w, true)
+						QueryReplies[j], _ = circle.Backends[j].Query(req, w, true)
 					})
 			}
 
 			// wait for parallel queries to return
 			err := group.Wait()
 			if err != nil {
-				proxy.Logf("Error running parallel query: %v", error)
+				proxy.Logf("Error running parallel query: %v", err)
 				return nil, err
 			}
 

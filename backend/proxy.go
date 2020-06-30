@@ -296,7 +296,7 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 						lock.Lock()
 						QueryReplies[j], err = circle.Backends[j].Query(req, w, true)
 						lock.Unlock()
-						proxy.Logf("QueryReplies got for index %d error: %v and response: %s", j, err, QueryReplies[j])
+						// proxy.Logf("QueryReplies got for index %d error: %v and response: %s", j, err, QueryReplies[j])
 					})
 			}
 

@@ -308,7 +308,8 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 			}
 
 			// iterate replies and merge
-			for _, reply := range QueryReplies {
+			for key, reply := range QueryReplies {
+				proxy.Logf("key[%d] value[%s]\n", key, reply)
 				if reply != nil {
 					result, _, error := jsonmerge.MergeBytes(bodies, reply)
 					if error == nil {
@@ -317,6 +318,8 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 						proxy.Logf("Error merging backend data: %s", error)
 						return nil, error
 					}
+				} else {
+					proxy.Logf("Error iterating QueryReplies")
 				}
 			}
 

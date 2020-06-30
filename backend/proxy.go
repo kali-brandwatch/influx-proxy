@@ -283,8 +283,9 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 			bodies := []byte(`{}`)
 			// calculate the number of the backends in the circle
 			ExpectedReplies := len(circle.Backends)
-			// declare QueryReplies array to store the replies of each individual backend query
-			QueryReplies := make(sync.Map[int])
+			// declare QueryReplies array to store the replies of each individual backend query and its mutex
+			QueryReplies := make(map[int][]byte)
+			lock := sync.RWMutex{}
 			// prepare worker pool for parallel querying each backend
 			group := parallelizer.NewGroup(parallelizer.WithPoolSize(ExpectedReplies))
 			defer group.Close()
@@ -293,8 +294,10 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 					j := i - 1 // to access zero-based array indices
 					group.Add(func() {
 						QueryReply, _ := circle.Backends[j].Query(req, w, true)
-						QueryReplies.Store(j, QueryReply)
-						proxy.Logf("Queryreplies got for index %d the response: %s", j, QueryReply)
+						lock.Lock()
+						QueryReplies[j] = QueryReply
+						lock.Unlock()
+						proxy.Logf("QueryReplies got for index %d the response: %s", j, QueryReply[j])
 					})
 			}
 

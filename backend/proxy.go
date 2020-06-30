@@ -280,7 +280,7 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 			// // modified working mode: queries will be sent to all backends in the available circle, and merged
 
 			// declare bodies as empty json, to allow jsonmerge work properly. this will be what we return
-			bodies := []byte(`{}`)
+			bodies := []byte(`[{}]`)
 			// calculate the number of the backends in the circle
 			ExpectedReplies := len(circle.Backends)
 			// declare QueryReplies array to store the replies of each individual backend query and its mutex

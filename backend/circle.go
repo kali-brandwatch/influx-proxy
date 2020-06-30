@@ -1,9 +1,9 @@
 package backend
 
 import (
+	"../util"
 	"bytes"
 	"fmt"
-	"github.com/kali-brandwatch/influx-proxy/util"
 	"github.com/deckarep/golang-set"
 	"github.com/influxdata/influxdb1-client/models"
 	"io/ioutil"

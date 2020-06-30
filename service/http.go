@@ -1,13 +1,13 @@
 package service
 
 import (
+	"../backend"
+	"../util"
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/kali-brandwatch/influx-proxy/backend"
-	"github.com/kali-brandwatch/influx-proxy/util"
 	"io/ioutil"
 	"log"
 	"net/http"

@@ -1,10 +1,10 @@
 package main
 
 import (
+	"./backend"
+	"./service"
 	"flag"
 	"fmt"
-	"github.com/kali-brandwatch/influx-proxy/backend"
-	"github.com/kali-brandwatch/influx-proxy/service"
 	"log"
 	"net/http"
 	"runtime"

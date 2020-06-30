@@ -1,11 +1,11 @@
 package backend
 
 import (
-	"../util"
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kali-brandwatch/influx-proxy/util"
 	"github.com/deckarep/golang-set"
 	"io/ioutil"
 	"log"

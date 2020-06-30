@@ -293,6 +293,7 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 					j := i - 1 // to access zero-based array indices
 					group.Add(func() {
 						QueryReplies[j], _ = circle.Backends[j].Query(req, w, true)
+						proxy.Logf("Queryreplies got for index %d the response: %s", j, QueryReplies[j])
 					})
 			}
 

@@ -311,7 +311,7 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 			for key, reply := range QueryReplies {
 				proxy.Logf("key[%d] value[%s]\n", key, reply)
 				if reply != nil {
-					result, _, error := jsonmerge.MergeBytes(bodies, reply)
+					result, _, error := jsonmerge.MergeBytes(reply, bodies)
 					if error == nil {
 						proxy.Logf("jsonmerge result: %s", result)
 						bodies = result

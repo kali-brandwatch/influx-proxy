@@ -313,6 +313,7 @@ func (proxy *Proxy) Query(w http.ResponseWriter, req *http.Request, tokens []str
 				if reply != nil {
 					result, _, error := jsonmerge.MergeBytes(bodies, reply)
 					if error == nil {
+						proxy.Logf("jsonmerge result: %s", result)
 						bodies = result
 					} else {
 						proxy.Logf("Error merging backend data: %s", error)
